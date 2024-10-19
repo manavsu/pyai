@@ -1,0 +1,12 @@
+Cell 0 output:
+Note: you may need to restart the kernel to use updated packages.
+
+Cell 4 output:
+<Figure size 640x480 with 1 Axes>
+Cell 4 image saved as plot_output_cell_4.png
+Cell 5 output:
+Hello, world!
+
+Cell 6 output:
+The answer is 42
+
