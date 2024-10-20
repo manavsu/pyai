@@ -75,7 +75,7 @@ class Notebook:
         if cell_index < 0 or cell_index >= len(self.notebook.cells):
             return "Cell index out of range."
         
-        return self.names[cell_index], self.notebook.cells[cell_index].source
+        return self.names[cell_index - 1], self.notebook.cells[cell_index].source
     
     def edit_cell(self, cell_index, new_content):
         """Replace the contents of a cell with new content.
@@ -135,7 +135,10 @@ class Notebook:
         Returns:
             list: The output of each cell.
         """
-        self.client.execute()
+        try:
+            self.client.execute()
+        except Exception as e:
+            pass
         np_outputs = []
 
         # TODO: support multiple output images
@@ -155,6 +158,7 @@ class Notebook:
                             outputs.append(f'image/png saved as tmp/cell_{cell_index}.png')
 
                 np_outputs.append({f"{cell_index} - {self.names[cell_index]}":outputs})
+        return np_outputs
 
     def install_package(self, package_name):
         """Install the specified package using pip.
@@ -175,11 +179,11 @@ class Notebook:
         with open(save_path, 'w', encoding='utf-8') as f:
             nbformat.write(self.notebook, f)
 
-nb = Notebook()
-nb.create_cell("hello world","print('Hello, World!')")
-nb.install_package("requests")
-nb.create_cell("import", "import requests")
-nb.create_cell("requwst", "requests.get('https://www.google.com')")
-print(nb.execute_all_cells())
-nb.save("hello_world.ipynb")
+# nb = Notebook()
+# nb.create_cell("hello world","print('Hello, World!')")
+# nb.install_package("requests")
+# nb.create_cell("import", "import requests")
+# nb.create_cell("requwst", "requests.get('https://www.google.com')")
+# print(nb.execute_all_cells())
+# nb.save("hello_world.ipynb")
 
