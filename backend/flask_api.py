@@ -47,7 +47,7 @@ def query():
         message = agent_manager.query_agent(agent_id, request.form.get('input'), attachments=[attachment.filename for attachment in attachments])
         notifications = agent_manager.get_notifications(agent_id)
     except ValueError as e:
-        return jsonify({"error": str(e)}), 400
+        return jsonify({"An error occurred while querying agent"}), 400
     
     return jsonify({"message": message, "notifications": notifications})
 

@@ -122,7 +122,7 @@ class Notebook:
                                 image_file.write(image_data)
                             outputs.append(f'image/png saved as cell_{cell_index}.png')
 
-                np_outputs.append({f"{cell_index} - {self.names[cell_index]}":outputs})
+                np_outputs.append({f"{cell_index} - {self.names[cell_index-1]}":outputs})
         return np_outputs
 
     def install_package(self, package_name):

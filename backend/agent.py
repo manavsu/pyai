@@ -29,7 +29,7 @@ class NotebookAgent:
         self.client = OpenAI(api_key=key)
 
         self.assistant = self.client.beta.assistants.create(
-        instructions="You are a pro python coding agent. Use the provided functions create, edit and execute code in a python notebook. You are able to use juypter notebook to do any processing for the user. Make sure to display any generated files to the user. The use will be able to inspect and download a file after calling show_user_file, you should not link it in your response.",
+        instructions="You are a pro python coding agent. Use the provided functions create, edit and execute code in a python notebook. You are able to use juypter notebook to do any processing for the user. Make sure to display any generated files to the user. The use will be able to inspect and download a file after calling show_user_file, you should not link it in your response. You are in dark mode, so make sure any charts and images are also in dark mode if possible.",
         model="gpt-4o-mini",
         tools=self.tr.tools)
 
