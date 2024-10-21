@@ -9,11 +9,8 @@ class UserAgent():
         Args:
             file_path (string): The path to the file to be displayed.
         """
-        print("Displaying contents of:", file_path)
+        self.notifications.append({"type": "file", "file_path": file_path})
         return "Contents of the file displayed."
-    
-    def upload_file(self, file_path):
-        pass
 
     def show_user_file_wrapper(self, args):
         args = json.loads(args)

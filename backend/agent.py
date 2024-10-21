@@ -7,7 +7,6 @@ import logging
 from user_agent import UserAgent
 
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
 
 class NotebookAgent:
     def __init__(self):
@@ -80,10 +79,10 @@ class NotebookAgent:
         return {"error": f"Unknown status: {status} - {run.last_error.code} - {run.last_error.message}"}
 
 
-agent = NotebookAgent()
-while True:
-    user_input = input("--> ")
-    if user_input == "exit":
-        break
+# agent = NotebookAgent()
+# while True:
+#     user_input = input("--> ")
+#     if user_input == "exit":
+#         break
 
-    print(agent.handle_user_input(user_input))
+#     print(agent.handle_user_input(user_input))

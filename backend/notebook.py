@@ -90,44 +90,6 @@ class Notebook:
         
         self.notebook.cells[cell_index].source = new_content
         return f"Cell {cell_index-1} edited successfully."
-
-    # def execute_cell(self, cell_index):
-    #     """Execute a cell and return the output.
-
-    #     Args:
-    #         cell_index (integer): The index of the cell to execute.
-
-    #     Returns:
-    #         str: The output of the cell.
-    #     """
-    #     cell_index = cell_index + 1
-    #     if cell_index < 0 or cell_index >= len(self.notebook.cells):
-    #         return "Cell index out of range."
-    #     try:
-    #         if not self.notebook.cells[cell_index].cell_type == 'code':
-    #             return "Cell does not contain code."
-    #         self.client.execute_cell(self.notebook.cells[cell_index], cell_index)
-    #         cell_outputs = self.notebook.cells[cell_index].outputs
-    #         if cell_outputs:
-    #             outputs = []
-    #             for output in cell_outputs:
-    #                 if 'output_type' in output:
-    #                     if output['output_type'] == "stream":
-    #                         if output['name'] == 'stdout':
-    #                             outputs.append((OutputType.TEXT, output['text']))
-    #                         if output['name'] == 'stderr':
-    #                             outputs.append((OutputType.ERROR, output['text']))
-    #                     if output['output_type'] == "display_data":
-    #                         outputs.append((OutputType.TEXT, output['data']['text/plain']))
-    #                         # outputs.append((OutputType.IMAGE, output['data']['image/png']))
-    #                     if output['output_type'] == "execute_result":
-    #                         outputs.append((OutputType.TEXT, output['data']['text/plain']))
-    #         return outputs
-    #     except Exception as e:
-    #         # return OutputType.ERROR, f"Error executing cell {cell_index}: {e.ename} - {e.evalue}"
-    #         tb_str = ''.join(traceback.format_exception(None, e, e.__traceback__))
-    #         print(OutputType.ERROR, f"Error executing cell {cell_index}: {tb_str}")
-    #         return [(OutputType.ERROR, f"Error executing cell {cell_index - 1}: {e}")]
     
     def execute_all_cells(self):
         """Execute the notebook. Return the output of each cell.
@@ -146,6 +108,9 @@ class Notebook:
             if cell.cell_type == 'code':
                 outputs = []
                 for output in cell.outputs:
+                    print(output)
+                    if 'ename' in output:
+                        outputs.append("Error - " + output['ename'] + (":" + output['evalue'] if 'evalue' in output else "") + (":" + str(output['traceback']) if 'traceback' in output else ""))
                     if 'text' in output:
                         outputs.append(output['text'])
                     if 'data' in output:
@@ -153,9 +118,9 @@ class Notebook:
                             outputs.append(output['data']['text/plain'])
                         if 'image/png' in output['data']:
                             image_data = base64.b64decode(output['data']['image/png'])
-                            with open(f'tmp/cell_{cell_index}.png', 'wb') as image_file:
+                            with open(f'cell_{cell_index}.png', 'wb') as image_file:
                                 image_file.write(image_data)
-                            outputs.append(f'image/png saved as tmp/cell_{cell_index}.png')
+                            outputs.append(f'image/png saved as cell_{cell_index}.png')
 
                 np_outputs.append({f"{cell_index} - {self.names[cell_index]}":outputs})
         return np_outputs
