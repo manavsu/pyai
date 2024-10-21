@@ -11,7 +11,6 @@ node_modules
 .output
 .vercel
 /.svelte-kit
-/build
 
 # OS
 .DS_Store
@@ -30,10 +29,5 @@ vite.config.ts.timestamp-*
 backend/static
 
 .vscode
-frontend/.svelte-kit/
-/frontend/build
-
-frontend/.svelte-kit/generated/client/nodes/0.js
-frontend/.svelte-kit/generated/server/internal.js
-frontend/.svelte-kit/types/route_meta_data.json
-frontend/.svelte-kit/types/src/routes/$types.d.ts
+/frontend/.svelte-kit/
+/frontend
