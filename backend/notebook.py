@@ -1,9 +1,10 @@
 import nbformat
 from nbformat.v4 import new_notebook, new_code_cell
 from nbclient import NotebookClient
-
+from cwd import cwd
 import base64
-
+import sys
+import subprocess
 """
 A class to represent a notebook.
 Cell 0 is reserved for package installations.
@@ -121,8 +122,8 @@ class Notebook:
                             with open(f'cell_{cell_index}.png', 'wb') as image_file:
                                 image_file.write(image_data)
                             outputs.append(f'image/png saved as cell_{cell_index}.png')
-
-                np_outputs.append({f"{cell_index} - {self.names[cell_index-1]}":outputs})
+                print(self.names, cell_index+1)
+                np_outputs.append({f"{cell_index} - {self.names[cell_index]}":outputs})
         return np_outputs
 
     def install_package(self, package_name):
@@ -143,12 +144,3 @@ class Notebook:
     def save(self, save_path):
         with open(save_path, 'w', encoding='utf-8') as f:
             nbformat.write(self.notebook, f)
-
-# nb = Notebook()
-# nb.create_cell("hello world","print('Hello, World!')")
-# nb.install_package("requests")
-# nb.create_cell("import", "import requests")
-# nb.create_cell("requwst", "requests.get('https://www.google.com')")
-# print(nb.execute_all_cells())
-# nb.save("hello_world.ipynb")
-

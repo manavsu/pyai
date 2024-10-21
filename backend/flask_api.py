@@ -13,8 +13,8 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 agent_manager = AgentManager()
-if os.path.exists("tmp"):
-    shutil.rmtree("tmp")
+# if os.path.exists("tmp"):
+#     shutil.rmtree("tmp")
 
 @app.route('/')
 def index():
@@ -47,7 +47,7 @@ def query():
         message = agent_manager.query_agent(agent_id, request.form.get('input'), attachments=[attachment.filename for attachment in attachments])
         notifications = agent_manager.get_notifications(agent_id)
     except ValueError as e:
-        return jsonify({"An error occurred while querying agent"}), 400
+        return jsonify({"error":"An error occurred while querying agent"}), 400
     
     return jsonify({"message": message, "notifications": notifications})
 
