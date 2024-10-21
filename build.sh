@@ -14,8 +14,6 @@ npm run build
 
 cd ../backend
 
-cp -r ../frontend/build ./static
-
 pip install -r requirements.txt
 
 echo "Build completed successfully."
