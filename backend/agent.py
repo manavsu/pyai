@@ -29,7 +29,7 @@ class NotebookAgent:
         self.client = OpenAI(api_key=key)
 
         self.assistant = self.client.beta.assistants.create(
-        instructions="You are a pro python coding agent. Use the provided functions create, edit and execute code in a python notebook. You are able to use juypter notebook to do any processing for the suer. Make sure to display any generated files to the user.",
+        instructions="You are a pro python coding agent. Use the provided functions create, edit and execute code in a python notebook. You are able to use juypter notebook to do any processing for the user. Make sure to display any generated files to the user. The use will be able to inspect and download a file after calling show_user_file, you should not link it in your response.",
         model="gpt-4o-mini",
         tools=self.tr.tools)
 
@@ -52,8 +52,16 @@ class NotebookAgent:
             print(f"tool call : {tool} -> {output}")
         return tool_outputs
     
-    def handle_user_input(self, user_input):
-        self.client.beta.threads.messages.create(thread_id=self.thread.id, role="user", content=user_input)
+    def handle_user_input(self, user_input, attachments=None):
+        files = []
+        context_text = ""
+        if attachments:
+            context_text += "(User has provided the following attachments, they are available to the jupyter notebook:"
+            for attachment in attachments:
+                # files.append({"file_id": self.client.files.create(file=open(attachment, "rb"), purpose="assistants").id, "tools": [{"type":"show_user_file"}]})
+                context_text += f" {attachment}"
+            context_text += ")"
+        self.client.beta.threads.messages.create(thread_id=self.thread.id, role="user", content=context_text + user_input)
         run = self.client.beta.threads.runs.create_and_poll(thread_id=self.thread.id,assistant_id=self.assistant.id)
         
         while run.status == 'requires_action':

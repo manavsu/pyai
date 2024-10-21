@@ -4,7 +4,7 @@
 
 <style lang="postcss">
 	:global(html) {
-		@apply bg-black text-white;
+		@apply bg-black text-white text-xl;
 		caret-color: white;
 	}
 </style>

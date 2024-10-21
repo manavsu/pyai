@@ -38,9 +38,13 @@ def query():
     print(f"Querying agent with id: {agent_id}")
     if not agent_id:
         return jsonify({"error": "Agent id not found, try creating a new one."}), 400
+    
+    attachments = request.files.getlist('files')
+    for attachment in attachments:
+        agent_manager.save_attachment(agent_id, attachment)
 
     try:
-        message = agent_manager.query_agent(agent_id, request.json.get('input'))
+        message = agent_manager.query_agent(agent_id, request.form.get('input'), attachments=[attachment.filename for attachment in attachments])
         notifications = agent_manager.get_notifications(agent_id)
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
@@ -49,7 +53,7 @@ def query():
 
 @app.route('/get_file/<filename>', methods=['GET'])
 def get_file(filename):
-    agent_id = request.cookies.get('agent_id') # TODO: Use this as directory
+    agent_id = request.cookies.get('agent_id') #TODO: add indiviudal .venvs
     safe_filename = os.path.basename(filename)
     return send_file(os.path.join(os.getcwd(),"tmp", agent_id, safe_filename))
 

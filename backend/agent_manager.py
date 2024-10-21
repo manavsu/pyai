@@ -12,13 +12,19 @@ class AgentManager:
         self.agents[agent_id] = NotebookAgent()
         return True
     
-    def query_agent(self, agent_id, user_input):
+    def query_agent(self, agent_id, user_input, attachments=None):
         if agent_id not in self.agents:
             raise ValueError("Agent not found.")
         if not user_input:
             raise ValueError("User input cannot be empty.")
         with cwd(os.path.join("tmp", agent_id)):
-            return self.agents[agent_id].handle_user_input(user_input)
+            return self.agents[agent_id].handle_user_input(user_input, attachments)
+        
+    def save_attachment(self, agent_id, file):
+        if agent_id not in self.agents:
+            raise ValueError("Agent not found.")
+        with cwd(os.path.join("tmp", agent_id)):
+            file.save(file.filename)
     
     def get_notifications(self, agent_id):
         if agent_id not in self.agents:

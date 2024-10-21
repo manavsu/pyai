@@ -26,15 +26,22 @@ export async function create_new_agent() {
 	}
 }
 
-export async function query_agent(input: string) {
+export async function query_agent(input: string, attachments: {file:string, url:string}[] = []) {
 	try {
+		console.log('Querying agent with input:', input, attachments);
+		const formData = new FormData();
+		formData.append('input', input);
+
+        for (const attachment of attachments) {
+            const response = await fetch(attachment.url);
+            const blob = await response.blob();
+            formData.append('files', blob, attachment.file);
+        }
+
 		const response = await fetch(`${BASE_URL}/query/`, {
 			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
 			credentials: 'include',
-			body: JSON.stringify({ input })
+			body: formData
 		});
 		if (!response.ok) {
 			if (response.status != 400) {

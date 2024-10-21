@@ -4,7 +4,7 @@ class UserAgent():
         self.notifications = []
 
     def show_user_file(self, file_path):
-        """Display the contents of a file to the user.
+        """Display the contents of a file to the user. The user will be able to inspect and download the file. You should not link it in your response.
 
         Args:
             file_path (string): The path to the file to be displayed.
