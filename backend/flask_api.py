@@ -1,9 +1,10 @@
-from flask import Flask, request, jsonify, send_from_directory, make_response
+from flask import Flask, request, jsonify, send_from_directory, make_response, send_file
 from flask_cors import CORS
 import logging
 import uuid
 from agent_manager import AgentManager
 import os
+import shutil
 
 log = logging.getLogger(__name__)
 # logging.basicConfig(level=logging.INFO)
@@ -12,6 +13,8 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 agent_manager = AgentManager()
+if os.path.exists("tmp"):
+    shutil.rmtree("tmp")
 
 @app.route('/')
 def index():
@@ -48,7 +51,7 @@ def query():
 def get_file(filename):
     agent_id = request.cookies.get('agent_id') # TODO: Use this as directory
     safe_filename = os.path.basename(filename)
-    return send_from_directory('tmp', safe_filename)
+    return send_file(os.path.join(os.getcwd(),"tmp", agent_id, safe_filename))
 
 if __name__ == '__main__':
     app.run(debug=True)

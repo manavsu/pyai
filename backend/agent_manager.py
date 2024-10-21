@@ -1,4 +1,7 @@
 from agent import NotebookAgent
+from cwd import cwd
+import os
+
 class AgentManager:
     def __init__(self):
         self.agents = {}
@@ -14,9 +17,12 @@ class AgentManager:
             raise ValueError("Agent not found.")
         if not user_input:
             raise ValueError("User input cannot be empty.")
-        return self.agents[agent_id].handle_user_input(user_input)
+        with cwd(os.path.join("tmp", agent_id)):
+            return self.agents[agent_id].handle_user_input(user_input)
     
     def get_notifications(self, agent_id):
         if agent_id not in self.agents:
             raise ValueError("Agent not found.")
-        return self.agents[agent_id].user_agent.notifications
+        notifications = self.agents[agent_id].user_agent.notifications
+        self.agents[agent_id].user_agent.notifications = []
+        return notifications

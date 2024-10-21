@@ -59,7 +59,8 @@ export async function query_agent(input: string) {
 
 export async function get_file(filename: string) {
     try {
-        const response = await fetch(`${BASE_URL}/get_file/?filename=${filename}`, {
+        console.log('Fetching file:', filename);
+        const response = await fetch(`${BASE_URL}/get_file/${filename}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'

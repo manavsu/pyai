@@ -69,7 +69,7 @@ class NotebookAgent:
                 log.debug("No tool outputs to submit.")
             
             status = run.status
-            self.nbw.save("tmp/test.ipynb")
+            self.nbw.save("test.ipynb")
 
         if run.status == 'completed':
             messages = self.client.beta.threads.messages.list(thread_id=self.thread.id)

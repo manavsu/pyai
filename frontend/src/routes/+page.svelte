@@ -25,8 +25,11 @@
 
 	async function handle_notifications(notifications: Notification[]) {
 		if (!notifications) return;
+		console.log(notifications);
 		for (const notification of notifications) {
-			if (notification.type === NotificationType.File) {
+
+			if (notification.type == NotificationType.File) {
+				console.log(notification.type);
 				let file = await get_file(notification.content);
 				history = [...history, { type: MessageType.File, origin: Origin.Agent, content: file! }];
 			}
@@ -59,6 +62,8 @@
 					<div class="markdown">
 						{@html marked(entry.content)}
 					</div>
+				{:else if entry.type === MessageType.File}
+					<img class="w-96" src={entry.content} alt="Agent generated file {entry.content}." aria-hidden="true"/>
 				{/if}
 			{/if}
 		{/each}

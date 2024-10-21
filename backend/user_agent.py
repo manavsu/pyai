@@ -9,7 +9,7 @@ class UserAgent():
         Args:
             file_path (string): The path to the file to be displayed.
         """
-        self.notifications.append({"type": "file", "file_path": file_path})
+        self.notifications.append({"type": "file", "content": file_path})
         return "Contents of the file displayed."
 
     def show_user_file_wrapper(self, args):
