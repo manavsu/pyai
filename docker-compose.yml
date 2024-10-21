@@ -1,0 +1,10 @@
+services:
+  pyai:
+    image: pyai
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 80:80
+    volumes:
+      - ./tmp:/home/manav/Documents/pyai/tmp

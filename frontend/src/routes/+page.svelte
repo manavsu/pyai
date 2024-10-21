@@ -10,7 +10,7 @@
 	let history: ConsoleMessage[] = [
 		{ type:MessageType.Code, origin:Origin.System, content:"                       _\n    ____  __  ______ _(_)\n   / __ \/ / / / __ `/ /\n  / /_/ / /_/ / /_/ / /\n / .___/\__, /\__,_/_/\n/_/    /____/"},
 		// { type: MessageType.Code, origin: Origin.System, content: '                               __\n   ____ ___  ____  _________  / /_\n  / __ `__ \\/ __ \\/ ___/ __ \\/ __ \\\n / / / / / / /_/ / /  / /_/ / / / /\n/_/ /_/ /_/\\____/_/  / .___/_/ /_/\n                    /_/' },
-		{ type: MessageType.Code, origin: Origin.System, content: 'Agent: gpt-4o-mini\nTools: [Juypter Notebook]'},
+		{ type: MessageType.Code, origin: Origin.System, content: 'Agent: gpt-4o-mini\nTools: [Jupyter Notebook]'},
 	];
 	let input_element: HTMLInputElement;
 	let file_to_url: { [key: string]: string } = {};
@@ -34,7 +34,7 @@
 		let response = await query_agent(user_input, query_attachments);
 
 		await handle_notifications(response?.notifications);
-		history.pop();
+		history = history.filter((entry) => entry.type != MessageType.Loading);
 		history = [...history, { type: MessageType.Markdown, origin: Origin.Agent, content: response?.message}];
 		loading = false;
 		input_element.focus();
@@ -100,14 +100,14 @@
 					<div class="flex flex-row gap-2 text-gray-400">
 						{#if entry.attachments}
 							{#each entry.attachments as url}
-								<a href={url} target="_blank" class="text-gray-400">[{file_to_url[url]}]</a>
+								<a href={"http://"+url} target="_blank" class="text-gray-400 hover:scale-110 transition duration-400">[{file_to_url[url]}]</a>
 							{/each}
 						{/if}
 						<p>></p>
 						<p>{entry.content}</p>
 					</div>
 				{:else if entry.origin === Origin.Agent}
-					<div class="mx-auto w-5/6">
+					<div class="mx-auto max-w-5/6 w-fit">
 						{#if entry.type === MessageType.Text}
 							<p>{entry.content}</p>
 						{:else if entry.type === MessageType.Markdown}
@@ -115,8 +115,9 @@
 								{@html marked(entry.content)}
 							</div>
 						{:else if entry.type === MessageType.File}
-							<a href={entry.content} download={file_to_url[entry.content]} class="text-blue-500">[{file_to_url[entry.content]}]</a>
+							<a href={entry.content} download={file_to_url[entry.content]} class="text-teal-500 w-fit hover:scale-110 transition duration-400">[{file_to_url[entry.content]}]</a>
 						{:else if entry.type === MessageType.Image}
+							<a href={entry.content} download={file_to_url[entry.content]} class="text-teal-500 w-fit hover:scale-110 transition duration-400">[{file_to_url[entry.content]}]</a>
 							<img class="p-2" src={entry.content} alt={file_to_url[entry.content]} aria-hidden="true" />
 						{:else if entry.type === MessageType.TextFile}
 							{#await fetch(entry.content).then((res) => res.text()) then fileContent}
@@ -130,7 +131,7 @@
 		</div>
 		<div class="flex w-7/8 flex-row gap-2">
 			<input type="file" disabled={loading} id="fileInputElement" on:change={handle_file_input} class="hidden" />
-			<label for="fileInputElement" class="{loading ? "text-gray-400" : "text-blue-500 hover:scale-110" } duration-400 cursor-pointer transition ">[Attach File]</label>
+			<label for="fileInputElement" class="{loading ? "text-gray-400" : "text-teal-500 hover:scale-110" } duration-400 cursor-pointer transition ">[Attach File]</label>
 			{#each attached_files as url}
 				<button on:click={() => remove_attached_file(url)} class="duration-400 text-gray-400 transition hover:scale-90">[{file_to_url[url]}]</button>
 			{/each}

@@ -1,5 +1,5 @@
 <script>
-	import '../app.css';
+	import '$lib/app.css';
 </script>
 
 <style lang="postcss">

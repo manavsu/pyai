@@ -9,16 +9,18 @@ import shutil
 log = logging.getLogger(__name__)
 # logging.basicConfig(level=logging.INFO)
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../frontend/build')
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 
 agent_manager = AgentManager()
-# if os.path.exists("tmp"):
-#     shutil.rmtree("tmp")
 
 @app.route('/')
-def index():
-    return "Hello, World!"
+def serve_index():
+    return send_from_directory(app.static_folder, 'index.html')
+
+@app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory(app.static_folder, path)
 
 @app.route('/new_agent/', methods=['POST'])
 def new_agent():
