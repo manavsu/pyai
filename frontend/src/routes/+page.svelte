@@ -8,7 +8,8 @@
 
 	let input = '';
 	let history: ConsoleMessage[] = [
-		{ type: MessageType.Code, origin: Origin.System, content: '                               __\n   ____ ___  ____  _________  / /_\n  / __ `__ \\/ __ \\/ ___/ __ \\/ __ \\\n / / / / / / /_/ / /  / /_/ / / / /\n/_/ /_/ /_/\\____/_/  / .___/_/ /_/\n                    /_/' },
+		{ type:MessageType.Code, origin:Origin.System, content:"                       _\n    ____  __  ______ _(_)\n   / __ \/ / / / __ `/ /\n  / /_/ / /_/ / /_/ / /\n / .___/\__, /\__,_/_/\n/_/    /____/"},
+		// { type: MessageType.Code, origin: Origin.System, content: '                               __\n   ____ ___  ____  _________  / /_\n  / __ `__ \\/ __ \\/ ___/ __ \\/ __ \\\n / / / / / / /_/ / /  / /_/ / / / /\n/_/ /_/ /_/\\____/_/  / .___/_/ /_/\n                    /_/' },
 		{ type: MessageType.Code, origin: Origin.System, content: 'Agent: gpt-4o-mini\nTools: [Juypter Notebook]'},
 	];
 	let input_element: HTMLInputElement;
