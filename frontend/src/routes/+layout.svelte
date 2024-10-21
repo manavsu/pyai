@@ -4,11 +4,11 @@
 
 <style lang="postcss">
 	:global(html) {
-		@apply bg-black text-white text-xl;
+		@apply bg-black text-white;
 		caret-color: white;
 	}
 </style>
 
-<div class="flex h-dvh flex-col overflow-auto overscroll-contain">
+<div class="flex h-dvh flex-col overflow-auto overscroll-contain sm:text-xl">
 	<slot />
 </div>

@@ -85,7 +85,7 @@
 </script>
 
 <div class="flex h-full flex-row gap-5 p-5">
-	<div class="mx-auto flex h-full w-5/6 flex-col gap-5 pl-5 md:w-3/4 lg:w-3/5 xl:w-1/2 pb-10">
+	<div class="mx-auto flex h-full w-full flex-col gap-5 pl-5 md:w-3/4 lg:w-3/5 xl:w-1/2 pb-10">
 		<div class="flex flex-col w-full flex-grow gap-2 overflow-auto overscroll-contain">
 			{#each history as entry}
 				{#if entry.type === MessageType.Code}
@@ -107,7 +107,7 @@
 						<p>{entry.content}</p>
 					</div>
 				{:else if entry.origin === Origin.Agent}
-					<div class="mx-auto max-w-5/6 w-fit">
+					<div class="mx-auto xs:max-w-full sm:max-w-5/6 w-fit">
 						{#if entry.type === MessageType.Text}
 							<p>{entry.content}</p>
 						{:else if entry.type === MessageType.Markdown}
@@ -131,7 +131,7 @@
 		</div>
 		<div class="flex w-7/8 flex-row gap-2">
 			<input type="file" disabled={loading} id="fileInputElement" on:change={handle_file_input} class="hidden" />
-			<label for="fileInputElement" class="{loading ? "text-gray-400" : "text-teal-500 hover:scale-110" } duration-400 cursor-pointer transition ">[Attach File]</label>
+			<label for="fileInputElement" class="{loading ? "text-gray-400" : "text-teal-500 hover:scale-110" } duration-400 cursor-pointer transition text-nowrap">[Attach File]</label>
 			{#each attached_files as url}
 				<button on:click={() => remove_attached_file(url)} class="duration-400 text-gray-400 transition hover:scale-90">[{file_to_url[url]}]</button>
 			{/each}
