@@ -8,3 +8,5 @@ services:
       - 80:80
     volumes:
       - ./tmp:/home/manav/Documents/pyai/tmp
+    restart: unless-stopped
+

@@ -5,6 +5,8 @@ FROM python:3-slim
 # For more information, please refer to https://aka.ms/vscode-docker-python-user-rights`
 EXPOSE 80
 
+ENV PYTHONUNBUFFERED=1
+
 # Install pip requirements
 COPY backend/requirements.txt .
 RUN python -m pip install -r requirements.txt
