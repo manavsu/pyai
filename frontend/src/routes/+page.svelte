@@ -136,7 +136,7 @@
 				<button on:click={() => remove_attached_file(url)} class="duration-400 text-gray-400 transition hover:scale-90">[{file_to_url[url]}]</button>
 			{/each}
 			<p>></p>
-			<input bind:this={input_element} bind:value={input} on:keydown={handle_input_keydown} disabled={loading} class="flex-grow px-3 rounded-md resize-none bg-black {loading ? "" : "hover:bg-gray-900"}  text-white transition duration-400 focus:outline-none border-2" placeholder="" />
+			<input bind:this={input_element} bind:value={input} on:keydown={handle_input_keydown} disabled={loading} class="flex-grow px-3 rounded-md resize-none bg-black {loading ? "" : "hover:bg-gray-900"}  text-white transition duration-400 focus:outline-none" placeholder="" />
 			<button on:click={submit_and_query} class="duration-400 pr-2 transition {loading || !input? "text-gray-400" : "hover:scale-110"}" disabled={loading || !input}>[Submit]</button>
 		</div>
 	</div>
