@@ -7,6 +7,7 @@ export enum MessageType {
     Image = 'image',
     TextFile = 'text_file',
     Loading = 'loading',
+    Logo = 'logo'
 }
 
 export enum Origin {

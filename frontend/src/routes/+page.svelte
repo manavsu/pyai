@@ -8,9 +8,9 @@
 
 	let input = '';
 	let history: ConsoleMessage[] = [
-		{ type:MessageType.Code, origin:Origin.System, content:"                       _\n    ____  __  ______ _(_)\n   / __ \/ / / / __ `/ /\n  / /_/ / /_/ / /_/ / /\n / .___/\__, /\__,_/_/\n/_/    /____/"},
+		{ type:MessageType.Logo, origin:Origin.System, content:"                       _\n    ____  __  ______ _(_)\n   / __ \\/ / / / __ `/ /\n  / /_/ / /_/ / /_/ / /\n / .___/\__, /\__,_/_/_/\n/_/    /____/"},
 		// { type: MessageType.Code, origin: Origin.System, content: '                               __\n   ____ ___  ____  _________  / /_\n  / __ `__ \\/ __ \\/ ___/ __ \\/ __ \\\n / / / / / / /_/ / /  / /_/ / / / /\n/_/ /_/ /_/\\____/_/  / .___/_/ /_/\n                    /_/' },
-		{ type: MessageType.Code, origin: Origin.System, content: 'Agent: gpt-4o-mini\nTools: [Jupyter Notebook]'},
+		{ type: MessageType.Text, origin: Origin.System, content: 'Agent: gpt-4o-mini\nTools: [Jupyter Notebook]'},
 	];
 	let input_element: HTMLInputElement;
 	let file_to_url: { [key: string]: string } = {};
@@ -93,8 +93,10 @@
 				{:else if entry.origin === Origin.System}
 					{#if entry.type === MessageType.Loading}
 						<Loader />
-					{:else}
-						<p class="text-gray-400">{entry.content}</p>
+					{:else if entry.type === MessageType.Text}
+						<pre class="text-gray-400">{entry.content}</pre>
+					{:else if entry.type === MessageType.Logo}
+						<pre class="text-gray-400 leading-none">{entry.content}</pre>
 					{/if}
 				{:else if entry.origin === Origin.User}
 					<div class="flex flex-row gap-2 text-gray-400">
@@ -130,14 +132,14 @@
 			<div bind:this={chatEnd}></div>
 		</div>
 		<div class="flex w-7/8 flex-row gap-2">
-			<input type="file" disabled={loading} id="fileInputElement" on:change={handle_file_input} class="hidden" />
-			<label for="fileInputElement" class="{loading ? "text-gray-400" : "text-blue-500 hover:scale-110" } duration-400 cursor-pointer transition text-nowrap">[Attach File]</label>
+			<input type="file" disabled={loading} id="fileInputElement" on:change={handle_file_input} class="hidden min-w-10 " />
+			<label for="fileInputElement" class="{loading ? "text-gray-400" : "text-blue-500 hover:scale-110" } mine-w-10 duration-400 cursor-pointer transition text-nowrap"><pre>[Attach File]</pre></label>
 			{#each attached_files as url}
 				<button on:click={() => remove_attached_file(url)} class="duration-400 text-gray-400 transition hover:scale-90">[{file_to_url[url]}]</button>
 			{/each}
 			<p>></p>
-			<input bind:this={input_element} bind:value={input} on:keydown={handle_input_keydown} disabled={loading} class="flex-grow px-3 rounded-md resize-none bg-black {loading ? "" : "hover:bg-gray-900"}  text-white transition duration-400 focus:outline-none" placeholder="" />
-			<button on:click={submit_and_query} class="duration-400 pr-2 transition {loading || !input? "text-gray-400" : "hover:scale-110"}" disabled={loading || !input}>[Submit]</button>
+			<input bind:this={input_element} bind:value={input} on:keydown={handle_input_keydown} disabled={loading} class="flex-grow px-3 rounded-md bg-black {loading ? "" : "hover:bg-gray-900"}  text-white transition duration-400 focus:outline-none" placeholder="" />
+			<button on:click={submit_and_query} class="duration-400 pr-2 transition {loading || !input? "text-gray-400" : "hover:scale-110"}" disabled={loading || !input}><pre>[↵]</pre></button>
 		</div>
 	</div>
 	<!-- <div class="h-full w-1/4 border-2 border-white"></div> -->
