@@ -107,7 +107,7 @@
 						<p>{entry.content}</p>
 					</div>
 				{:else if entry.origin === Origin.Agent}
-					<div class="mx-auto xs:max-w-full sm:max-w-5/6 w-fit">
+					<div class="justify-self-center xs:max-w-full sm:max-w-5/6 w-fit">
 						{#if entry.type === MessageType.Text}
 							<p>{entry.content}</p>
 						{:else if entry.type === MessageType.Markdown}
@@ -115,9 +115,9 @@
 								{@html marked(entry.content)}
 							</div>
 						{:else if entry.type === MessageType.File}
-							<a href={entry.content} download={file_to_url[entry.content]} class="text-teal-500 w-fit hover:scale-110 transition duration-400">[{file_to_url[entry.content]}]</a>
+							<a href={entry.content} download={file_to_url[entry.content]} class="text-blue-500 w-fit hover:scale-110 transition duration-400">[{file_to_url[entry.content]}]</a>
 						{:else if entry.type === MessageType.Image}
-							<a href={entry.content} download={file_to_url[entry.content]} class="text-teal-500 w-fit hover:scale-110 transition duration-400">[{file_to_url[entry.content]}]</a>
+							<a href={entry.content} download={file_to_url[entry.content]} class="text-blue-500 w-fit hover:scale-110 transition duration-400">[{file_to_url[entry.content]}]</a>
 							<img class="p-2" src={entry.content} alt={file_to_url[entry.content]} aria-hidden="true" />
 						{:else if entry.type === MessageType.TextFile}
 							{#await fetch(entry.content).then((res) => res.text()) then fileContent}
@@ -131,7 +131,7 @@
 		</div>
 		<div class="flex w-7/8 flex-row gap-2">
 			<input type="file" disabled={loading} id="fileInputElement" on:change={handle_file_input} class="hidden" />
-			<label for="fileInputElement" class="{loading ? "text-gray-400" : "text-teal-500 hover:scale-110" } duration-400 cursor-pointer transition text-nowrap">[Attach File]</label>
+			<label for="fileInputElement" class="{loading ? "text-gray-400" : "text-blue-500 hover:scale-110" } duration-400 cursor-pointer transition text-nowrap">[Attach File]</label>
 			{#each attached_files as url}
 				<button on:click={() => remove_attached_file(url)} class="duration-400 text-gray-400 transition hover:scale-90">[{file_to_url[url]}]</button>
 			{/each}
