@@ -85,7 +85,7 @@
 </script>
 
 <div class="flex h-full flex-row gap-5 p-5">
-	<div class="mx-auto flex h-full w-full flex-col gap-5 pl-5 md:w-3/4 lg:w-3/5 xl:w-1/2 pb-10">
+	<div class="mx-auto flex h-full w-full flex-col gap-5 pl-5 md:w-5/7 lg:w-3/5 xl:w-2/3 pb-10">
 		<div class="flex flex-col w-full flex-grow gap-2 overflow-auto overscroll-contain">
 			{#each history as entry}
 				{#if entry.type === MessageType.Code}
@@ -136,7 +136,7 @@
 				<button on:click={() => remove_attached_file(url)} class="duration-400 text-gray-400 transition hover:scale-90">[{file_to_url[url]}]</button>
 			{/each}
 			<p>></p>
-			<input bind:this={input_element} bind:value={input} on:keydown={handle_input_keydown} disabled={loading} class="flex-grow px-3 rounded-md resize-none bg-black {loading ? "" : "hover:bg-gray-800"} text-white transition duration-400 focus:outline-none" placeholder="" />
+			<input bind:this={input_element} bind:value={input} on:keydown={handle_input_keydown} disabled={loading} class="flex-grow px-3 rounded-md resize-none bg-black {loading ? "" : "hover:bg-gray-900"}  text-white transition duration-400 focus:outline-none border-2" placeholder="" />
 			<button on:click={submit_and_query} class="duration-400 pr-2 transition {loading || !input? "text-gray-400" : "hover:scale-110"}" disabled={loading || !input}>[Submit]</button>
 		</div>
 	</div>
