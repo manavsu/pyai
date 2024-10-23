@@ -9,7 +9,7 @@ class AgentManager:
     def create_agent(self, agent_id):
         if agent_id in self.agents:
             return False
-        self.agents[agent_id] = NotebookAgent()
+        self.agents[agent_id] = NotebookAgent(agent_id)
         return True
     
     def query_agent(self, agent_id, user_input, attachments=None):

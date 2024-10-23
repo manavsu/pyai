@@ -5,15 +5,17 @@ from tool_registry import ToolRegistry
 from notebook_wrapper import NotebookWrapper
 import logging
 from user_agent import UserAgent
+import base_log
 
-log = logging.getLogger(__name__)
+log = base_log.BASE_LOG.getChild(__name__)
 
 class NotebookAgent:
-    def __init__(self):
-        self.tr = ToolRegistry()
-        self.nb = Notebook()
+    def __init__(self, agent_id):
+        self.tr = ToolRegistry(agent_id)
+        self.nb = Notebook(agent_id)
         self.nbw = NotebookWrapper(self.nb)
-        self.user_agent = UserAgent()
+        self.user_agent = UserAgent(agent_id)
+        self.agent_id = agent_id
 
         self.tr.register_tool(self.nb.create_cell, self.nbw.create_cell)
         self.tr.register_tool(self.nb.edit_cell, self.nbw.edit_cell)
@@ -41,19 +43,19 @@ class NotebookAgent:
         for tool in tool_calls:
             func = self.tr.get_tool(tool.function.name)
             if not func:
+                log.error(f"{self.agent_id}:Function {tool.function.name} is not registered.")
                 raise ValueError(f"Function {tool.function.name} is not registered.")
             
+            log.info(f"{self.agent_id}:Tool call -> {tool.function.name}")
             output = func(tool.function.arguments)
             if output:
                 tool_outputs.append({
                     "tool_call_id": tool.id,
                     "output": str(output)
                 })
-            print(f"tool call : {tool} -> {output}")
         return tool_outputs
     
     def handle_user_input(self, user_input, attachments=None):
-        files = []
         context_text = ""
         if attachments:
             context_text += "(User has provided the following attachments, they are available to the jupyter notebook:"
@@ -61,6 +63,8 @@ class NotebookAgent:
                 # files.append({"file_id": self.client.files.create(file=open(attachment, "rb"), purpose="assistants").id, "tools": [{"type":"show_user_file"}]})
                 context_text += f" {attachment}"
             context_text += ")"
+
+        log.info(f"{self.agent_id}:User input -> {user_input}{(" " + " ".join(attachments)) if attachments else ''}")
         self.client.beta.threads.messages.create(thread_id=self.thread.id, role="user", content=context_text + user_input)
         run = self.client.beta.threads.runs.create_and_poll(thread_id=self.thread.id,assistant_id=self.assistant.id)
         
@@ -70,27 +74,19 @@ class NotebookAgent:
             if tool_outputs:
                 try:
                     run = self.client.beta.threads.runs.submit_tool_outputs_and_poll(thread_id=self.thread.id, run_id=run.id, tool_outputs=tool_outputs)
-                    log.debug("Tool outputs submitted successfully.")
+                    log.debug(f"{self.agent_id}:Tool outputs submitted successfully.")
                 except Exception as e:
-                    log.error("Failed to submit tool outputs:", e)
+                    log.error(f"{self.agent_id}:Failed to submit tool outputs:", e)
             else:
-                log.debug("No tool outputs to submit.")
+                log.debug(f"{self.agent_id}No tool outputs to submit.")
             
             status = run.status
-            self.nbw.save("test.ipynb")
+            self.nbw.save("notebook.ipynb")
 
         if run.status == 'completed':
             messages = self.client.beta.threads.messages.list(thread_id=self.thread.id)
+            log.debug(f"{self.agent_id}:Run completed successfully. -> {messages.data[0].content[0].text.value}")
             return messages.data[0].content[0].text.value
 
         log.error(f"Unknown status: {status} - {run.last_error.code} - {run.last_error.message}")
         return {"error": f"Unknown status: {status} - {run.last_error.code} - {run.last_error.message}"}
-
-
-# agent = NotebookAgent()
-# while True:
-#     user_input = input("--> ")
-#     if user_input == "exit":
-#         break
-
-#     print(agent.handle_user_input(user_input))

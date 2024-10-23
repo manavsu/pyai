@@ -5,9 +5,9 @@ import uuid
 from agent_manager import AgentManager
 import os
 import shutil
+import base_log
 
-log = logging.getLogger(__name__)
-# logging.basicConfig(level=logging.INFO)
+log = base_log.BASE_LOG.getChild(__name__)
 
 app = Flask(__name__, static_folder='../frontend/build')
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
@@ -25,7 +25,7 @@ def serve_static(path):
 @app.route('/new_agent/', methods=['POST'])
 def new_agent():
     agent_id = "agent_" + str(uuid.uuid4())
-    print(f"Creating new agent with id: {agent_id}")
+    log.info(f"Creating new agent with id: {agent_id}")
     if agent_manager.create_agent(agent_id):
         response = make_response(jsonify({"message":"Agent created successfully.", "agent_id": agent_id}))
         response.set_cookie('agent_id', agent_id)
@@ -37,7 +37,7 @@ def new_agent():
 @app.route('/query/', methods=['POST'])
 def query():
     agent_id = request.cookies.get('agent_id')
-    print(f"Querying agent with id: {agent_id}")
+    log.info(f"Querying agent with id: {agent_id}")
     if not agent_id:
         return jsonify({"error": "Agent id not found, try creating a new one."}), 400
     
@@ -55,6 +55,7 @@ def query():
 
 @app.route('/get_file/<filename>', methods=['GET'])
 def get_file(filename):
+    log.info(f"Getting file: {filename}")
     agent_id = request.cookies.get('agent_id') #TODO: add indiviudal .venvs
     safe_filename = os.path.basename(filename)
     return send_file(os.path.join(os.getcwd(),"tmp", agent_id, safe_filename))
