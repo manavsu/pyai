@@ -1,6 +1,10 @@
 import json
+import base_log
+
+log = base_log.BASE_LOG.getChild(__name__)
+
 class UserAgent():
-    def __init__(self):
+    def __init__(self, agent_id):
         self.notifications = []
 
     def show_user_file(self, file_path):
