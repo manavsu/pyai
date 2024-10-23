@@ -17,20 +17,21 @@ class Notebook:
         self.notebook = new_notebook()
         self.client = NotebookClient(self.notebook)
         self.names = {}
-        self.create_cell("pip package install", "")
         self.agent_id = agent_id
+        self.create_cell("pip package install", "")
 
     def create_cell(self, cell_name, cell_content):
         """Create a new cell and add it to the python notebook. The cell is added at the end of the notebook. cell_name should be a short, descriptive name for the cell.
 
         Args:
             cell_name (string): The name of the cell. Use this to reference the cell in the future.
-            cell_content (string): The contents of the cell.
+            cell_content (string): The contents of the cell, in LF format.
         """
+        cell_content = self.unescape_string(cell_content)
         cell = new_code_cell(cell_content)
         self.notebook.cells.append(cell)
         self.names[len(self.notebook.cells) - 2] = cell_name
-        log.debug(f"{self.agent_id}:Cell created: {len(self.notebook.cells) - 2} {cell_name} {cell_content}")
+        log.debug(f"{self.agent_id}:Cell created: {len(self.notebook.cells) - 2} {cell_name}\n{cell_content}")
         return f"Cell created at index {len(self.notebook.cells) - 2}."
 
     def insert_cell(self, cell_index, cell_name, cell_content):
@@ -39,7 +40,7 @@ class Notebook:
         Args:
             cell_index (integer): The index to insert the cell at.
             cell_name (string): The name of the cell. Use this to reference the cell in the future.
-            cell_content (string): The contents of the cell.
+            cell_content (string): The contents of the cell, in LF format.
         """
         cell_index = cell_index + 1
         if cell_index < 0:
@@ -49,9 +50,11 @@ class Notebook:
             log.warning(f"{self.agent_id}:Cell index out of range.")
             return "Cell index out of range."
         
+        cell_content = self.unescape_string(cell_content)
         cell = new_code_cell(cell_content)
         self.notebook.cells.insert(cell_index, cell)
         self.names[cell_index - 1] = cell_name
+        log.debug(f"{self.agent_id}:Cell inserted: {cell_index - 1} {cell_name}\n{cell_content}")
         return f"Cell inserted at index {cell_index - 1}."
     
     def delete_cell(self, cell_index):
@@ -66,9 +69,10 @@ class Notebook:
         if cell_index >= len(self.notebook.cells):
             return "Cell index out of range."
         
+        name = self.names[cell_index - 1]
         del self.notebook.cells[cell_index]
         del self.names[cell_index - 1]
-        log.debug(f"{self.agent_id}:Cell deleted: {cell_index - 1} {self.names[cell_index - 1]}")
+        log.debug(f"{self.agent_id}:Cell deleted: {cell_index - 1} {name}")
         return f"Cell {cell_index-1} deleted successfully."
 
     def get_cell_content(self, cell_index):
@@ -93,14 +97,15 @@ class Notebook:
 
         Args:
             cell_index (integer): The index of the cell to edit.
-            new_content (string): The new content to replace the cell with.
+            new_content (string): The new content to replace the cell with, in LF format.
         """
         cell_index = cell_index + 1
         if cell_index < 0 or cell_index >= len(self.notebook.cells):
             return "Cell index out of range."
         
+        new_content = self.unescape_string(new_content)
         self.notebook.cells[cell_index].source = new_content
-        log.debug(f"{self.agent_id}:Cell edited: {cell_index - 1} {self.names[cell_index - 1]} {new_content}")
+        log.debug(f"{self.agent_id}:Cell edited: {cell_index - 1} {self.names[cell_index - 1]}\n{new_content}")
         return f"Cell {cell_index-1} edited successfully."
     
     def execute_all_cells(self):
@@ -136,7 +141,7 @@ class Notebook:
                                 image_file.write(image_data)
                             outputs.append(f'image/png saved as cell_{cell_index}.png')
                 np_outputs.append({f"{cell_index} - {self.names[cell_index]}":outputs})
-        log.debug(f"{self.agent_id}:Executed all cells.")
+        log.debug(f"{self.agent_id}:Executed all cells. Outputs -> \n{np_outputs}")
         return np_outputs
 
     def install_package(self, package_name):
@@ -159,3 +164,6 @@ class Notebook:
     def save(self, save_path):
         with open(save_path, 'w', encoding='utf-8') as f:
             nbformat.write(self.notebook, f)
+
+    def unescape_string(self, string):
+        return bytes(string, "utf-8").decode("unicode_escape")
