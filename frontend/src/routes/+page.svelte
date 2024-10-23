@@ -91,8 +91,8 @@
 
 <div class="flex flex-row items-center justify-between p-5 px-5">
 	<pre class="text-3xl leading-none">pyai</pre>
-	<div class="flex flex-row text-3xl">
-		<a href={code_url} download="notebook.ipynb" class="{loading || !code_url ? 'text-gray-600' : ' hover:scale-110'} mine-w-10 duration-400 cursor-pointer text-nowrap pb-2 text-3xl transition" title="Download code"><pre>[&lt;/&gt;]</pre></a>
+	<div class="flex flex-row text-xl sm:text-3xl">
+		<a href={code_url} download="notebook.ipynb" class="{loading || !code_url ? 'text-gray-600' : ' hover:scale-110'} mine-w-10 duration-400 cursor-pointer text-nowrap pb-2 transition" title="Download code"><pre>[&lt;/&gt;]</pre></a>
 	</div>
 </div>
 <hr class="mx-5 border-gray-600" />
@@ -151,9 +151,9 @@
 		<div class="flex flex-row gap-2">
 			<p class="text-3xl {loading ? 'text-gray-600' : ''}">></p>
 			<input bind:this={input_element} bind:value={input} on:keydown={handle_input_keydown} disabled={loading} class="flex-grow border-b bg-black px-3 pb-2 {loading ? 'border-gray-600' : ''}  duration-400 text-white transition focus:outline-none" placeholder="" />
-			<button on:click={submit_and_query} class="duration-400 pb-2 transition {loading || !input ? 'text-gray-600' : 'hover:scale-110'} text-3xl" disabled={loading || !input} title="Submit"><pre>[↵]</pre></button>
+			<button on:click={submit_and_query} class="duration-400 pb-2 transition {loading || !input ? 'text-gray-600' : 'hover:scale-110'} text-xl sm:text-3xl" disabled={loading || !input} title="Submit"><pre>[↵]</pre></button>
 			<input type="file" disabled={loading} id="fileInputElement" on:change={handle_file_input} class="hidden min-w-10" />
-			<label for="fileInputElement" class="{loading ? 'text-gray-600' : ' hover:scale-110'} mine-w-10 duration-400 cursor-pointer text-nowrap pb-2 text-3xl transition" title="Attach file"><pre>[+]</pre></label>
+			<label for="fileInputElement" class="{loading ? 'text-gray-600' : ' hover:scale-110'} mine-w-10 duration-400 cursor-pointer text-nowrap pb-2 text-xl sm:text-3xl transition" title="Attach file"><pre>[+]</pre></label>
 		</div>
 	</div>
 	<div class="flex flex-row justify-around gap-5">
