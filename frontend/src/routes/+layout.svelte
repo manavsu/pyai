@@ -9,6 +9,6 @@
 	}
 </style>
 
-<div class="flex h-dvh flex-col overflow-auto overscroll-contain sm:text-xl">
+<div class="flex h-dvh w-dvw flex-col overflow-auto overscroll-contain sm:text-xl">
 	<slot />
 </div>
