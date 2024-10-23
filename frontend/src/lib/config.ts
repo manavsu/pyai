@@ -1,1 +1,1 @@
-export const BASE_URL = 'http://127.0.0.1:5100';
+export const BASE_URL = 'http://pyai.duckdns.org:80';
