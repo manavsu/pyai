@@ -27,7 +27,7 @@ class Notebook:
             cell_name (string): The name of the cell. Use this to reference the cell in the future.
             cell_content (string): The contents of the cell, in LF format.
         """
-        cell_content = self.unescape_string(cell_content)
+        # cell_content = self.unescape_string(cell_content)
         cell = new_code_cell(cell_content)
         self.notebook.cells.append(cell)
         self.names[len(self.notebook.cells) - 2] = cell_name
@@ -50,7 +50,7 @@ class Notebook:
             log.warning(f"{self.agent_id}:Cell index out of range.")
             return "Cell index out of range."
         
-        cell_content = self.unescape_string(cell_content)
+        # cell_content = self.unescape_string(cell_content)
         cell = new_code_cell(cell_content)
         self.notebook.cells.insert(cell_index, cell)
         self.names[cell_index - 1] = cell_name
@@ -103,7 +103,7 @@ class Notebook:
         if cell_index < 0 or cell_index >= len(self.notebook.cells):
             return "Cell index out of range."
         
-        new_content = self.unescape_string(new_content)
+        # new_content = self.unescape_string(new_content)
         self.notebook.cells[cell_index].source = new_content
         log.debug(f"{self.agent_id}:Cell edited: {cell_index - 1} {self.names[cell_index - 1]}\n{new_content}")
         return f"Cell {cell_index-1} edited successfully."
