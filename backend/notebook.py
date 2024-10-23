@@ -27,7 +27,7 @@ class Notebook:
             cell_name (string): The name of the cell. Use this to reference the cell in the future.
             cell_content (string): The contents of the cell, in LF format.
         """
-        self.normalize_code_input(cell_content)
+        cell_content = self.unescape_string(cell_content)
         cell = new_code_cell(cell_content)
         self.notebook.cells.append(cell)
         self.names[len(self.notebook.cells) - 2] = cell_name
@@ -50,6 +50,7 @@ class Notebook:
             log.warning(f"{self.agent_id}:Cell index out of range.")
             return "Cell index out of range."
         
+        cell_content = self.unescape_string(cell_content)
         cell = new_code_cell(cell_content)
         self.notebook.cells.insert(cell_index, cell)
         self.names[cell_index - 1] = cell_name
@@ -68,9 +69,10 @@ class Notebook:
         if cell_index >= len(self.notebook.cells):
             return "Cell index out of range."
         
+        name = self.names[cell_index - 1]
         del self.notebook.cells[cell_index]
         del self.names[cell_index - 1]
-        log.debug(f"{self.agent_id}:Cell deleted: {cell_index - 1} {self.names[cell_index - 1]}")
+        log.debug(f"{self.agent_id}:Cell deleted: {cell_index - 1} {name}")
         return f"Cell {cell_index-1} deleted successfully."
 
     def get_cell_content(self, cell_index):
@@ -101,6 +103,7 @@ class Notebook:
         if cell_index < 0 or cell_index >= len(self.notebook.cells):
             return "Cell index out of range."
         
+        new_content = self.unescape_string(new_content)
         self.notebook.cells[cell_index].source = new_content
         log.debug(f"{self.agent_id}:Cell edited: {cell_index - 1} {self.names[cell_index - 1]}\n{new_content}")
         return f"Cell {cell_index-1} edited successfully."
@@ -162,25 +165,5 @@ class Notebook:
         with open(save_path, 'w', encoding='utf-8') as f:
             nbformat.write(self.notebook, f)
 
-    def normalize_code_input(self, code_input):
-        """
-        This function takes a code string as input, processes it,
-        and prepares it for submission to the notebook.
-        
-        Args:
-            code_string (str): The raw code input from the user.
-        
-        Returns:
-            str: The formatted code ready for submission.
-        """
-
-        normalized_code = code_string.replace('\r\n', '\n').replace('\r', '\n')
-
-        if '"""' in normalized_code or "'''" in normalized_code:
-            normalized_code = normalized_code.replace('\\n', '\n')
-
-        normalized_code = normalized_code.replace('\\', '\\\\')  # Escape backslashes
-        normalized_code = normalized_code.replace('\"', '\\\"')  # Escape double quotes
-        normalized_code = normalized_code.replace('\'', '\\\'')  # Escape single quotes
-
-        return normalized_code
+    def unescape_string(self, string):
+        return bytes(string, "utf-8").decode("unicode_escape")
