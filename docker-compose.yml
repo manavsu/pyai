@@ -7,7 +7,7 @@ services:
     ports:
       - 80:80
     volumes:
-      - ./tmp:/home/manav/Documents/pyai/tmp
-      - ./log:/home/manav/Documents/pyai/log
+      - /home/manav/Documents/pyai/tmp:/app/tmp
+      - /home/manav/Documents/pyai/log:/app/log
     restart: unless-stopped
 
