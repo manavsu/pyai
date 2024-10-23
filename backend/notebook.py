@@ -25,8 +25,9 @@ class Notebook:
 
         Args:
             cell_name (string): The name of the cell. Use this to reference the cell in the future.
-            cell_content (string): The contents of the cell.
+            cell_content (string): The contents of the cell, in LF format.
         """
+        self.normalize_code_input(cell_content)
         cell = new_code_cell(cell_content)
         self.notebook.cells.append(cell)
         self.names[len(self.notebook.cells) - 2] = cell_name
@@ -39,7 +40,7 @@ class Notebook:
         Args:
             cell_index (integer): The index to insert the cell at.
             cell_name (string): The name of the cell. Use this to reference the cell in the future.
-            cell_content (string): The contents of the cell.
+            cell_content (string): The contents of the cell, in LF format.
         """
         cell_index = cell_index + 1
         if cell_index < 0:
@@ -94,7 +95,7 @@ class Notebook:
 
         Args:
             cell_index (integer): The index of the cell to edit.
-            new_content (string): The new content to replace the cell with.
+            new_content (string): The new content to replace the cell with, in LF format.
         """
         cell_index = cell_index + 1
         if cell_index < 0 or cell_index >= len(self.notebook.cells):
@@ -160,3 +161,26 @@ class Notebook:
     def save(self, save_path):
         with open(save_path, 'w', encoding='utf-8') as f:
             nbformat.write(self.notebook, f)
+
+    def normalize_code_input(self, code_input):
+        """
+        This function takes a code string as input, processes it,
+        and prepares it for submission to the notebook.
+        
+        Args:
+            code_string (str): The raw code input from the user.
+        
+        Returns:
+            str: The formatted code ready for submission.
+        """
+
+        normalized_code = code_string.replace('\r\n', '\n').replace('\r', '\n')
+
+        if '"""' in normalized_code or "'''" in normalized_code:
+            normalized_code = normalized_code.replace('\\n', '\n')
+
+        normalized_code = normalized_code.replace('\\', '\\\\')  # Escape backslashes
+        normalized_code = normalized_code.replace('\"', '\\\"')  # Escape double quotes
+        normalized_code = normalized_code.replace('\'', '\\\'')  # Escape single quotes
+
+        return normalized_code
