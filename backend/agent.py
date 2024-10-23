@@ -43,15 +43,16 @@ class NotebookAgent:
         for tool in tool_calls:
             func = self.tr.get_tool(tool.function.name)
             if not func:
+                log.error(f"{self.agent_id}:Function {tool.function.name} is not registered.")
                 raise ValueError(f"Function {tool.function.name} is not registered.")
             
+            log.info(f"{self.agent_id}:Tool call -> {tool.function.name}")
             output = func(tool.function.arguments)
             if output:
                 tool_outputs.append({
                     "tool_call_id": tool.id,
                     "output": str(output)
                 })
-            log.info(f"{self.agent_id}:Tool call -> {tool.function.name}")
         return tool_outputs
     
     def handle_user_input(self, user_input, attachments=None):
@@ -84,6 +85,7 @@ class NotebookAgent:
 
         if run.status == 'completed':
             messages = self.client.beta.threads.messages.list(thread_id=self.thread.id)
+            log.debug(f"{self.agent_id}:Run completed successfully. -> {messages.data[0].content[0].text.value}")
             return messages.data[0].content[0].text.value
 
         log.error(f"Unknown status: {status} - {run.last_error.code} - {run.last_error.message}")

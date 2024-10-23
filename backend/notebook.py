@@ -17,8 +17,8 @@ class Notebook:
         self.notebook = new_notebook()
         self.client = NotebookClient(self.notebook)
         self.names = {}
-        self.create_cell("pip package install", "")
         self.agent_id = agent_id
+        self.create_cell("pip package install", "")
 
     def create_cell(self, cell_name, cell_content):
         """Create a new cell and add it to the python notebook. The cell is added at the end of the notebook. cell_name should be a short, descriptive name for the cell.
@@ -30,7 +30,7 @@ class Notebook:
         cell = new_code_cell(cell_content)
         self.notebook.cells.append(cell)
         self.names[len(self.notebook.cells) - 2] = cell_name
-        log.debug(f"{self.agent_id}:Cell created: {len(self.notebook.cells) - 2} {cell_name} {cell_content}")
+        log.debug(f"{self.agent_id}:Cell created: {len(self.notebook.cells) - 2} {cell_name}\n{cell_content}")
         return f"Cell created at index {len(self.notebook.cells) - 2}."
 
     def insert_cell(self, cell_index, cell_name, cell_content):
@@ -52,6 +52,7 @@ class Notebook:
         cell = new_code_cell(cell_content)
         self.notebook.cells.insert(cell_index, cell)
         self.names[cell_index - 1] = cell_name
+        log.debug(f"{self.agent_id}:Cell inserted: {cell_index - 1} {cell_name}\n{cell_content}")
         return f"Cell inserted at index {cell_index - 1}."
     
     def delete_cell(self, cell_index):
@@ -100,7 +101,7 @@ class Notebook:
             return "Cell index out of range."
         
         self.notebook.cells[cell_index].source = new_content
-        log.debug(f"{self.agent_id}:Cell edited: {cell_index - 1} {self.names[cell_index - 1]} {new_content}")
+        log.debug(f"{self.agent_id}:Cell edited: {cell_index - 1} {self.names[cell_index - 1]}\n{new_content}")
         return f"Cell {cell_index-1} edited successfully."
     
     def execute_all_cells(self):
@@ -136,7 +137,7 @@ class Notebook:
                                 image_file.write(image_data)
                             outputs.append(f'image/png saved as cell_{cell_index}.png')
                 np_outputs.append({f"{cell_index} - {self.names[cell_index]}":outputs})
-        log.debug(f"{self.agent_id}:Executed all cells.")
+        log.debug(f"{self.agent_id}:Executed all cells. Outputs -> \n{np_outputs}")
         return np_outputs
 
     def install_package(self, package_name):
