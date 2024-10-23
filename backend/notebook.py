@@ -18,14 +18,15 @@ class Notebook:
         self.client = NotebookClient(self.notebook)
         self.names = {}
         self.agent_id = agent_id
-        self.create_cell("pip package install", "")
+        self.create_cell("pip package install", "# Package installs")
+        self.save("notebook.ipynb")
 
     def create_cell(self, cell_name, cell_content):
         """Create a new cell and add it to the python notebook. The cell is added at the end of the notebook. cell_name should be a short, descriptive name for the cell.
 
         Args:
             cell_name (string): The name of the cell. Use this to reference the cell in the future.
-            cell_content (string): The contents of the cell, in LF format.
+            cell_content (string): The contents of the cell, make sure it is escaped.
         """
         # cell_content = self.unescape_string(cell_content)
         cell = new_code_cell(cell_content)
@@ -40,7 +41,7 @@ class Notebook:
         Args:
             cell_index (integer): The index to insert the cell at.
             cell_name (string): The name of the cell. Use this to reference the cell in the future.
-            cell_content (string): The contents of the cell, in LF format.
+            cell_content (string): The contents of the cell, make sure it is unescaped.
         """
         cell_index = cell_index + 1
         if cell_index < 0:
@@ -97,7 +98,7 @@ class Notebook:
 
         Args:
             cell_index (integer): The index of the cell to edit.
-            new_content (string): The new content to replace the cell with, in LF format.
+            new_content (string): The new content to replace the cell with, make sure it is escaped.
         """
         cell_index = cell_index + 1
         if cell_index < 0 or cell_index >= len(self.notebook.cells):

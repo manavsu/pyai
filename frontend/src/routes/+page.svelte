@@ -6,7 +6,7 @@
 	import { getFileType, replaceSandboxCall } from '$lib/utils';
 	import Loader from '$lib/loader.svelte';
 
-	const logo = '                       _\n    ____  __  ______ _(_)\n   / __ \\/ / / / __ `/ /\n  / /_/ / /_/ / /_/ / /\n / .___/__, /__,_/_/_/\n/_/    /____/';
+	const logo = '                       _\n    ____  __  ______ _(_)\n   / __ \\/ / / / __ `/ /\n  / /_/ / /_/ / /_/ / /\n / .___/__,  /_,_/_/_/\n/_/    /____/';
 	let input = '';
 	let history: ConsoleMessage[] = [
 		{ type: MessageType.Logo, origin: Origin.System, content: logo },
