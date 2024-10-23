@@ -5,9 +5,9 @@ import uuid
 from agent_manager import AgentManager
 import os
 import shutil
+import base_log
 
-log = logging.getLogger(__name__)
-# logging.basicConfig(level=logging.INFO)
+log = base_log.BASE_LOG.getChild(__name__)
 
 app = Flask(__name__, static_folder='../frontend/build')
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
