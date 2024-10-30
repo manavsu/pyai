@@ -1,6 +1,6 @@
-from fastapi import FastAPI, Request, UploadFile, File, HTTPException, Depends, Response
+from fastapi import FastAPI, Request, UploadFile, File, HTTPException, Depends, Response, Form
 from fastapi.responses import JSONResponse, FileResponse
-from typing import List
+from typing import Optional
 import os
 from agent_manager import AgentManager
 import uuid
@@ -26,18 +26,31 @@ async def index():
 @app.post("/new_agent/")
 async def new_agent(response: Response):
     agent_id = "agent_" + str(uuid.uuid4())
-    print(f"Creating new agent with id: {agent_id}")
-    if agent_manager.create_agent(agent_id):
-        response.set_cookie(key="agent_id", value=agent_id)
-        return JSONResponse(content={"message": "Agent created successfully.", "agent_id": agent_id})
-    raise HTTPException(status_code=400, detail="Unable to create agent, try again.")
+    response.set_cookie(key="agent_id", value=agent_id)
+    return {"message": "Agent created successfully.", "agent_id": agent_id}
 
+# @app.post("/query/")
+# async def query(query: str = Form(...), attachments: Optional[list[UploadFile]] = None):
+#     log.info(f"{agent_id}:Querying agent with id: {agent_id}")
+#     uploaded_attachments = []
+#     if attachments:
+#         for file in attachments:
+#             log.info(f"{agent_id}:Saving attachment: {file.filename}")
+#             agent_manager.save_attachment(file)
+#             uploaded_attachments.append(file.filename)
+#     try:
+#         message = agent_manager.query_agent(query, attachments=(uploaded_attachments if uploaded_attachments else None))
+#         notifications = agent_manager.get_notifications()
+#     except ValueError as e:
+#         raise HTTPException(status_code=400, detail="An error occurred while querying agent")
+
+#     return {"message": message, "notifications": notifications}
 
 @app.post("/query/")
-async def query_agent(request: Request, attachments: List[UploadFile] = File(...)):
+async def query_agent(request: Request, query: str=Form(...), attachments: Optional[list[UploadFile]] = None):
     agent_id = request.cookies.get('agent_id')
     if not agent_id:
-        raise HTTPException(status_code=400, detail="Agent id not found, try creating a new one.")
+        raise HTTPException(status_code=400, detail="Agent ID not found, try creating a new one.")
 
     # Save attachments
     print(f"Received {len(attachments)} attachments")

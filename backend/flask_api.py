@@ -53,6 +53,8 @@ def query():
     
     return jsonify({"message": message, "notifications": notifications})
 
+
+
 @app.route('/get_file/<filename>', methods=['GET'])
 def get_file(filename):
     log.info(f"Getting file: {filename}")
