@@ -1,23 +1,37 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile, Form, Request, Response, HTTPException
 import uuid
+from typing import Optional, List
 import sys
+import os
+from agent_manager import AgentManager
 
 app = FastAPI()
 
 print(sys.argv)
 
+AGENT_ID = uuid.uuid4() # TODO
+
+agent_manager = AgentManager()
+
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
 
-@app.route('/new_agent/', methods=['POST'])
-async def new_agent():
-    agent_id = "agent_" + str(uuid.uuid4())
-    print(f"Creating new agent with id: {agent_id}")
-    if agent_manager.create_agent(agent_id):
-        response = make_response(jsonify({"message":"Agent created successfully.", "agent_id": agent_id}))
-        response.set_cookie('agent_id', agent_id)
-        return response
-    response = make_response(jsonify({"error": "Unable to create agent, try again."}), 400)
-    return response
+@app.post("/query/")
+async def query(query: str = Form(...), attachments: Optional[list[UploadFile]] = File(None)):
+    if attachments:
+        for file in attachments:
+            agent_manager.save_attachment(file)
+    
+    try:
+        message = agent_manager.query_agent(query, attachments=[file.filename for file in attachments])
+        notifications = agent_manager.get_notifications()
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail="An error occurred while querying agent")
 
+    return {"message": message, "notifications": notifications}
+
+@app.route('/get_file/<filename>', methods=['GET'])
+def get_file(filename):
+    safe_filename = os.path.basename(filename)
+    return send_file(os.path.join(os.getcwd(),"tmp", agent_id, safe_filename))
