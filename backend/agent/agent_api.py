@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, Form, Request, Response, HTTPException
+from fastapi import FastAPI, File, UploadFile, Form, Request, Response, HTTPException, FileResponse
 import uuid
 from typing import Optional, List
 import sys
@@ -31,7 +31,12 @@ async def query(query: str = Form(...), attachments: Optional[list[UploadFile]] 
 
     return {"message": message, "notifications": notifications}
 
+
 @app.route('/get_file/<filename>', methods=['GET'])
 def get_file(filename):
     safe_filename = os.path.basename(filename)
-    return send_file(os.path.join(os.getcwd(),"tmp", agent_id, safe_filename))
+
+    if not os.path.exists(safe_filename):
+        raise HTTPException(status_code=404, detail="File not found.")
+
+    return FileResponse(path=safe_filename, media_type="application/octet-stream", filename=filename)
