@@ -13,11 +13,13 @@ import base_log
 log = base_log.BASE_LOG.getChild(__name__)
 
 if len(sys.argv) < 4:
-    print("Usage: python fast_api.py <api_key> <agent_id> <log_path>")
+    print("Usage: python fast_api.py <port> <api_key> <agent_id> <log_path>")
     sys.exit(1)
 
-api_key = sys.argv[1]
-agent_id = sys.argv[2]
+port = int(sys.argv[1])
+api_key = sys.argv[2]
+agent_id = sys.argv[3]
+
 
 app = FastAPI()
 
@@ -48,7 +50,7 @@ async def query(query: str = Form(...), attachments: Optional[list[UploadFile]] 
 async def get_file(filename):
     safe_filename = os.path.basename(filename)
     log.info(f"{agent_id}:Getting file: {safe_filename}")
-    
+
     if not os.path.exists(safe_filename):
         raise HTTPException(status_code=404, detail="File not found.")
 
@@ -60,7 +62,7 @@ if __name__ == "__main__":
     
     loop = asyncio.get_event_loop()
 
-    config = uvicorn.Config(app, host="0.0.0.0", port=8000)
+    config = uvicorn.Config(app, host="0.0.0.0", port=port)
     server = uvicorn.Server(config)
 
     def sig_handler(sig, frame):

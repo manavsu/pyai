@@ -6,11 +6,11 @@ import sys
 import os
 
 if len(sys.argv) < 4:
-    print("Usage: python fast_api.py <api_key> <agent_id> <log_path>")
+    print("Usage: python fast_api.py <port> <api_key> <agent_id> <log_path>")
     sys.exit(1)
 
-agent_id = sys.argv[2]
-log_path = sys.argv[3]
+agent_id = sys.argv[3]
+log_path = sys.argv[4]
 
 BASE_LOG = logging.getLogger("pyai")
 BASE_LOG.setLevel(logging.DEBUG)
