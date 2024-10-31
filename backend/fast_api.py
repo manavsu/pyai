@@ -18,7 +18,7 @@ app.add_middleware(
     allow_origins=["*"], 
     allow_methods=["*"],
     allow_headers=["*"],
-)s
+)
 
 api_key = open("openai_key.secret").read().strip()
 cluster = Cluster(api_key=api_key)
