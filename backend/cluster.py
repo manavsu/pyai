@@ -23,9 +23,9 @@ class Node:
         
         with cwd(agent_env):
             subprocess.check_call(["python", "-m", "venv", ".venv"])
-            subprocess.check_call([os.join('.venv', 'bin', 'pip'), "install", "openai", "nbclient", "nbformat", "ipykernel"])
-            subprocess.check_call([os.join('.venv', 'bin', 'python'),"-m", "ipykernel", "install", "--name=venv", "--display-name", "Python (venv)", "--prefix", ".venv"], text=True)
-            self.process = subprocess.Popen([os.join(".venv", "bin", "python"), os.join('..','..','backend', 'agent', 'agent_api.py'), str(self.port), api_key, self.agent_id, os.join('..','..','log')], text=True)
+            subprocess.check_call([os.path.join('.venv', 'bin', 'pip'), "install", "openai", "nbclient", "nbformat", "ipykernel", "fastapi", "python-multipart", "uvicorn", "numpy", "pandas", "matplotlib", "beautifulsoup4"], text=True)
+            subprocess.check_call([os.path.join('.venv', 'bin', 'python'),"-m", "ipykernel", "install", "--name=venv", "--display-name", "Python (venv)", "--prefix", ".venv"], text=True)
+            self.process = subprocess.Popen([os.path.join(".venv", "bin", "python"), os.path.join('..','..','backend', 'agent', 'agent_api.py'), str(self.port), api_key, self.agent_id, os.path.join('..','..','log')], preexec_fn=os.setsid, text=True)
         self.spun_up = True
 
     def spin_down(self):
@@ -42,14 +42,15 @@ class Cluster:
         self.max_port = 20000
         self.used_ports = set()
         self.api_key = api_key
-        self.max_pet_time_secs = 60 # TODO : 10 minutes
+        self.max_pet_time_secs = 60 * 10# TODO : 10 minutes
         self.purge_interval_secs = 60
         self.kill_timer = Timer(self.purge_interval_secs, self.kill_agents)
         self.kill_timer.start()
 
     def add_agent(self, agent_id):
+        port = self._get_next_available_port()
         with self.agents_lock:
-            self.agents[agent_id] = Node(agent_id, self._get_next_available_port())
+            self.agents[agent_id] = Node(agent_id, port, self.api_key)
 
 
     def _get_next_available_port(self):
@@ -76,3 +77,8 @@ class Cluster:
                     self.used_ports.remove(node.port)
         self.kill_timer = Timer(self.purge_interval_secs, self.kill_agents)
         self.kill_timer.start()
+    
+    def shut_down(self):
+        with self.agents_lock:
+            for agent in self.agents.values():
+                agent.spin_down()

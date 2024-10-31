@@ -46,29 +46,18 @@ async def query(query: str = Form(...), attachments: Optional[list[UploadFile]] 
 
     return {"message": message, "notifications": notifications}
 
-@app.get('/get_file/<filename>/')
+@app.get('/get_file/{filename}')
 async def get_file(filename):
     safe_filename = os.path.basename(filename)
     log.info(f"{agent_id}:Getting file: {safe_filename}")
-
     if not os.path.exists(safe_filename):
+        log.warning(f"{agent_id}:File not found: {safe_filename}")
         raise HTTPException(status_code=404, detail="File not found.")
 
-    return FileResponse(path=safe_filename, media_type="application/octet-stream", filename=filename)
+    return os.path.abspath(safe_filename)
 
 
 if __name__ == "__main__":
     import uvicorn
     
-    loop = asyncio.get_event_loop()
-
-    config = uvicorn.Config(app, host="0.0.0.0", port=port)
-    server = uvicorn.Server(config)
-
-    def sig_handler(sig, frame):
-        loop.create_task(server.shutdown())
-    
-    signal.signal(signal.SIGINT, sig_handler)
-    signal.signal(signal.SIGTERM, sig_handler)
-
-    loop.run_until_complete(server.serve())
+    uvicorn.run(app, host="0.0.0.0", port=port)

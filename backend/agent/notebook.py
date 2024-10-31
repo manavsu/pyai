@@ -109,7 +109,7 @@ class Notebook:
         return f"Cell {cell_index-1} edited successfully."
     
     def execute_all_cells(self):
-        """Execute the notebook. Return the output of each cell.
+        """Execute the notebook. Return the output of each cell. Be aware that a repeated syntaxError may mean that the code needs to be escaped. If you keep running into issues you should ask the user for their input.
 
         Returns:
             list: The output of each cell.

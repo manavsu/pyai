@@ -7,7 +7,6 @@ export async function create_new_agent() {
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			credentials: 'include'
 		});
 
 		if (!response.ok) {
@@ -21,28 +20,31 @@ export async function create_new_agent() {
 
 		const data = await response.json();
 		console.log(data.message);
+		return data.agent_id;
 	} catch (error) {
 		console.error(error);
 	}
 }
 
-export async function query_agent(input: string, attachments: {file:string, url:string}[] = []) {
+export async function query_agent(agent_id: string, input: string, attachments: {file:string, url:string}[] = []) {
 	try {
 		console.log('Querying agent with input:', input, attachments);
 		const formData = new FormData();
-		formData.append('input', input);
+		formData.append('query', input);
+		formData.append('agent_id', agent_id)
 
         for (const attachment of attachments) {
             const response = await fetch(attachment.url);
             const blob = await response.blob();
-            formData.append('files', blob, attachment.file);
+            formData.append('attachments', blob, attachment.file);
         }
 
 		const response = await fetch(`${BASE_URL}/query/`, {
 			method: 'POST',
-			credentials: 'include',
+			headers: {'accept': 'application/json'},
 			body: formData
 		});
+
 		if (!response.ok) {
 			if (response.status != 400) {
 				throw new Error(`HTTP error! status: ${response.status}`);
@@ -64,15 +66,14 @@ export async function query_agent(input: string, attachments: {file:string, url:
 	}
 }
 
-export async function get_file(filename: string) {
+export async function get_file(agent_id: string, filename: string) {
     try {
         console.log('Fetching file:', filename);
-        const response = await fetch(`${BASE_URL}/get_file/${filename}`, {
+        const response = await fetch(`${BASE_URL}/get_file/${agent_id}/${filename}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             },
-            credentials: 'include'
         });
 
         if (!response.ok) {
@@ -87,6 +88,7 @@ export async function get_file(filename: string) {
         return fileURL;
     } catch (error) {
         console.error('Error fetching file:', error);
+		return null
     }
 }
 
