@@ -21,14 +21,15 @@ export async function create_new_agent() {
 
 		const data = await response.json();
 		console.log(data.message);
+		return data.agent_id;
 	} catch (error) {
 		console.error(error);
 	}
 }
 
-export async function query_agent(input: string, attachments: {file:string, url:string}[] = []) {
+export async function query_agent(input: string, agent_id: string, attachments: {file:string, url:string}[] = []) {
 	try {
-		console.log('Querying agent with input:', input, attachments);
+		console.log('Querying agent with input:', input, attachments, agent_id);
 		const formData = new FormData();
 		formData.append('input', input);
 
@@ -38,7 +39,7 @@ export async function query_agent(input: string, attachments: {file:string, url:
             formData.append('files', blob, attachment.file);
         }
 
-		const response = await fetch(`${BASE_URL}/query/`, {
+		const response = await fetch(`${BASE_URL}/query/${agent_id}/`, {
 			method: 'POST',
 			credentials: 'include',
 			body: formData
@@ -64,10 +65,10 @@ export async function query_agent(input: string, attachments: {file:string, url:
 	}
 }
 
-export async function get_file(filename: string) {
+export async function get_file(filename: string, agent_id: string) {
     try {
         console.log('Fetching file:', filename);
-        const response = await fetch(`${BASE_URL}/get_file/${filename}`, {
+        const response = await fetch(`${BASE_URL}/get_file/${agent_id}/${filename}/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json'

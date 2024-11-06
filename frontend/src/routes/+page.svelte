@@ -18,7 +18,8 @@
 	let attached_files: string[] = [];
 	let loading = false;
 	let chatEnd: any;
-	let code_url: string | null = null;
+	let code_url: string | undefined = undefined;
+	let agent_id: string;
 
 	async function handle_input_keydown(event: KeyboardEvent) {
 		if (event.key !== 'Enter') return;
@@ -33,11 +34,11 @@
 		attached_files = [];
 		const user_input = input;
 		input = '';
-		let response = await query_agent(user_input, query_attachments);
+		let response = await query_agent(user_input, agent_id, query_attachments);
 
 		await handle_notifications(response?.notifications);
 		history = history.filter((entry) => entry.type != MessageType.Loading);
-		code_url = await get_file_url('notebook.ipynb');
+		code_url = await get_file_url('notebook.ipynb', agent_id);
 		history = [...history, { type: MessageType.Markdown, origin: Origin.Agent, content: response?.message }];
 		loading = false;
 		input_element.focus();
@@ -50,7 +51,7 @@
 		for (const notification of notifications) {
 			if (notification.type == NotificationType.File) {
 				console.log(notification.type);
-				let url = await get_file_url(notification.content);
+				let url = await get_file_url(notification.content, agent_id);
 				if (url) {
 					const file_type = getFileType(notification.content);
 					history = [...history, { type: file_type, origin: Origin.Agent, content: url! }];
@@ -80,7 +81,7 @@
 	onMount(async () => {
 		input_element.focus();
 		loading = true;
-		await create_new_agent();
+		agent_id = await create_new_agent();
 		loading = false;
 	});
 

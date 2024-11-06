@@ -6,6 +6,7 @@ import base64
 import sys
 import subprocess
 import base_log
+from time import sleep
 
 log = base_log.BASE_LOG.getChild(__name__)
 """
@@ -20,6 +21,7 @@ class Notebook:
         self.agent_id = agent_id
         self.create_cell("pip package install", "# Package installs")
         self.save("notebook.ipynb")
+        sleep(1)
 
     def create_cell(self, cell_name, cell_content):
         """Create a new cell and add it to the python notebook. The cell is added at the end of the notebook. cell_name should be a short, descriptive name for the cell.

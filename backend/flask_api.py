@@ -28,15 +28,13 @@ def new_agent():
     log.info(f"Creating new agent with id: {agent_id}")
     if agent_manager.create_agent(agent_id):
         response = make_response(jsonify({"message":"Agent created successfully.", "agent_id": agent_id}))
-        response.set_cookie('agent_id', agent_id)
         return response
     response = make_response(jsonify({"error": "Unable to create agent, try again."}), 400)
     return response
 
 
-@app.route('/query/', methods=['POST'])
-def query():
-    agent_id = request.cookies.get('agent_id')
+@app.route('/query/<agent_id>/', methods=['POST'])
+def query(agent_id):
     log.info(f"Querying agent with id: {agent_id}")
     if not agent_id:
         return jsonify({"error": "Agent id not found, try creating a new one."}), 400
@@ -53,10 +51,9 @@ def query():
     
     return jsonify({"message": message, "notifications": notifications})
 
-@app.route('/get_file/<filename>', methods=['GET'])
-def get_file(filename):
+@app.route('/get_file/<agent_id>/<filename>/', methods=['GET'])
+def get_file(agent_id, filename):
     log.info(f"Getting file: {filename}")
-    agent_id = request.cookies.get('agent_id') #TODO: add indiviudal .venvs
     safe_filename = os.path.basename(filename)
     return send_file(os.path.join(os.getcwd(),"tmp", agent_id, safe_filename))
 

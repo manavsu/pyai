@@ -6,13 +6,16 @@ from notebook_wrapper import NotebookWrapper
 import logging
 from user_agent import UserAgent
 import base_log
+import os
+from cwd import cwd
 
 log = base_log.BASE_LOG.getChild(__name__)
 
 class NotebookAgent:
     def __init__(self, agent_id):
         self.tr = ToolRegistry(agent_id)
-        self.nb = Notebook(agent_id)
+        with cwd(os.path.join("tmp", agent_id)):
+            self.nb = Notebook(agent_id)
         self.nbw = NotebookWrapper(self.nb)
         self.user_agent = UserAgent(agent_id)
         self.agent_id = agent_id
