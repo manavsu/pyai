@@ -1,0 +1,1 @@
+An AI agent with access to a jupyter notebook. It can write and execute code, able to create scripts to analyze data. Most importantly it is able to receive feedback on errors with its code and iteratively fix them.
