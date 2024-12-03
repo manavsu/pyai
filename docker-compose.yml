@@ -9,3 +9,7 @@ services:
       - /home/manav/Documents/pyai/prod/tmp:/app/tmp
       - /home/manav/Documents/pyai/prod/log:/app/log
     restart: on-failure
+
+networks:
+  reverse_proxy_network:
+    external: true
