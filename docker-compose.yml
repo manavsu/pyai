@@ -1,3 +1,4 @@
+services: 
   pyai:
     build:
       context: .
