@@ -1,13 +1,10 @@
-services:
   pyai:
-    image: pyai
     build:
       context: .
       dockerfile: ./Dockerfile
-    ports:
-      - 80:80
+    networks:
+      - reverse_proxy_network
     volumes:
       - /home/manav/Documents/pyai/prod/tmp:/app/tmp
       - /home/manav/Documents/pyai/prod/log:/app/log
-    restart: unless-stopped
-
+    restart: on-failure
