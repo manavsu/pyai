@@ -1,5 +1,7 @@
 services: 
   pyai:
+    image: pyai
+    container_name: pyai
     build:
       context: .
       dockerfile: ./Dockerfile
