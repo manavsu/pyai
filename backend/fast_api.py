@@ -1,10 +1,14 @@
 from fastapi import FastAPI, Request, UploadFile, File, HTTPException, Depends, Response
 from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 from typing import List
 import os
 from agent_manager import AgentManager
 import uuid
 from fastapi.middleware.cors import CORSMiddleware
+import base_log
+
+log = base_log.BASE_LOG.getChild(__name__)
 
 app = FastAPI()
 
@@ -18,54 +22,47 @@ app.add_middleware(
 
 agent_manager = AgentManager()
 
-@app.get("/")
-async def index():
-    return "Hello, World!"
+@app.route('/')
+def serve_index():
+    return send_from_directory(app.static_folder, 'index.html')
 
+@app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory(app.static_folder, path)
 
-@app.post("/new_agent/")
-async def new_agent(response: Response):
+@app.route('/new_agent/', methods=['POST'])
+def new_agent():
     agent_id = "agent_" + str(uuid.uuid4())
-    print(f"Creating new agent with id: {agent_id}")
+    log.info(f"Creating new agent with id: {agent_id}")
     if agent_manager.create_agent(agent_id):
-        response.set_cookie(key="agent_id", value=agent_id)
-        return JSONResponse(content={"message": "Agent created successfully.", "agent_id": agent_id})
-    raise HTTPException(status_code=400, detail="Unable to create agent, try again.")
+        response = make_response(jsonify({"message":"Agent created successfully.", "agent_id": agent_id}))
+        return response
+    response = make_response(jsonify({"error": "Unable to create agent, try again."}), 400)
+    return response
 
 
-@app.post("/query/")
-async def query_agent(request: Request, attachments: List[UploadFile] = File(...)):
-    agent_id = request.cookies.get('agent_id')
+@app.route('/query/<agent_id>/', methods=['POST'])
+def query(agent_id):
+    log.info(f"Querying agent with id: {agent_id}")
     if not agent_id:
-        raise HTTPException(status_code=400, detail="Agent id not found, try creating a new one.")
-
-    # Save attachments
-    print(f"Received {len(attachments)} attachments")
+        return jsonify({"error": "Agent id not found, try creating a new one."}), 400
+    
+    attachments = request.files.getlist('files')
     for attachment in attachments:
-        print(f"Saving attachment: {attachment.filename}")
-        save_path = os.path.join(os.getcwd(), "tmp", agent_id, attachment.filename)
-        os.makedirs(os.path.dirname(save_path), exist_ok=True)
-        with open(save_path, "wb") as f:
-            f.write(await attachment.read())
+        agent_manager.save_attachment(agent_id, attachment)
 
     try:
-        form_data = await request.form()
-        message = agent_manager.query_agent(agent_id, form_data.get('input'), attachments=[attachment.filename for attachment in attachments])
+        message = agent_manager.query_agent(agent_id, request.form.get('input'), attachments=[attachment.filename for attachment in attachments])
         notifications = agent_manager.get_notifications(agent_id)
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        return jsonify({"error":"An error occurred while querying agent"}), 400
+    
+    return jsonify({"message": message, "notifications": notifications})
 
-    return {"message": message, "notifications": notifications}
-
-@app.get("/get_file/{filename}")
-async def get_file(filename: str, request: Request):
-    agent_id = request.cookies.get('agent_id')
-    if not agent_id:
-        raise HTTPException(status_code=400, detail="Agent id not found, try creating a new one.")
-
+@app.route('/get_file/<agent_id>/<filename>/', methods=['GET'])
+def get_file(agent_id, filename):
+    log.info(f"Getting file: {filename}")
     safe_filename = os.path.basename(filename)
-    file_path = os.path.join(os.getcwd(), "tmp", agent_id, safe_filename)
-    if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="File not found")
+    return send_file(os.path.join(os.getcwd(),"tmp", agent_id, safe_filename))
 
-    return FileResponse(file_path)
+app.mount("/", StaticFiles(directory="../frontend/build", html=True), name="static")

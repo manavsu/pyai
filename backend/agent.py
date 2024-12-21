@@ -34,7 +34,7 @@ class NotebookAgent:
         self.client = OpenAI(api_key=key)
 
         self.assistant = self.client.beta.assistants.create(
-        instructions="You are a pro python coding agent. Use the provided functions create, edit and execute code in a python notebook. You are able to use juypter notebook to do any processing for the user. Make sure to display any generated files to the user. The use will be able to inspect and download a file after calling show_user_file, you should not link it in your response.",
+        instructions="You are a pro python coding agent. Use the provided functions create, edit and execute code in a python notebook. You are able to use juypter notebook to do any processing for the user. Make sure to display any generated files to the user. The use will be able to inspect and download a file after calling show_user_file, you should not link it in your response. If you find yourself doing too many tool calls ask the user for help.",
         model="gpt-4o-mini",
         tools=self.tr.tools)
 
@@ -70,7 +70,7 @@ class NotebookAgent:
         log.info(f"{self.agent_id}:User input -> {user_input}{(" " + " ".join(attachments)) if attachments else ''}")
         self.client.beta.threads.messages.create(thread_id=self.thread.id, role="user", content=context_text + user_input)
         run = self.client.beta.threads.runs.create_and_poll(thread_id=self.thread.id,assistant_id=self.assistant.id)
-        
+        num_retries = 0
         while run.status == 'requires_action':
             tool_outputs = self.handle_tool_calls(run.required_action.submit_tool_outputs.tool_calls)
 
@@ -85,7 +85,12 @@ class NotebookAgent:
             
             status = run.status
             self.nbw.save("notebook.ipynb")
+            num_retries += 1
+            if num_retries > 30:
+                log.error(f"{self.agent_id}:Exceeded max retries.")
+                break
 
+        self.nbw.save("notebook.ipynb")
         if run.status == 'completed':
             messages = self.client.beta.threads.messages.list(thread_id=self.thread.id)
             log.debug(f"{self.agent_id}:Run completed successfully. -> {messages.data[0].content[0].text.value}")
