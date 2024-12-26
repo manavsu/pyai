@@ -13,5 +13,5 @@ Uses OpenAI Assistant Function Calling to give a model access a python notebook.
 * delete cell
 * insert cell
 * execute all cells
-  * ChatGPT had trouble figuring out what cells to run, would try to run cells without running dependent cells.
+  * ChatGPT had trouble figuring out what cells to run, would try to run cells without running dependent cells. No luck with prompt engineering.
 * install package
